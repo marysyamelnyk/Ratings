@@ -5,6 +5,7 @@ import time
 from typing import Dict, List
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardRemove
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ConversationHandler, CallbackQueryHandler, ContextTypes 
+import settings
 
 #url = 'https://ref-rating.com.ua/rating/studenthelp-com-ua'
 #tags = 'a', 'span'
@@ -129,7 +130,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return ConversationHandler.END
 
 def main():
-    application = ApplicationBuilder().token("7328718795:AAFNFD1rYF9O59Hm0lZoz7rRR2xEkYIzA_Y").build()
+    application = ApplicationBuilder().token(settings.API_KEY).build()
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
