@@ -52,7 +52,6 @@ async def confirm_input(update: Update, context: ContextTypes.DEFAULT_TYPE, data
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    # Відправка повідомлення з варіантами вибору
     if isinstance(update, Update) and update.message:
         await update.message.reply_text(f"Are you sure about: {data}?", reply_markup=reply_markup)
     else:
@@ -60,7 +59,6 @@ async def confirm_input(update: Update, context: ContextTypes.DEFAULT_TYPE, data
     
     return next_state
 
-# Функція для обробки підтвердження
 async def handle_confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE, next_state: int, prompt_text: str) -> int:
     query = update.callback_query
     await query.answer()

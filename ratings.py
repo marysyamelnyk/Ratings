@@ -26,7 +26,6 @@ class Platform:
             reviews_element = soup.find(self.tag, {self.address: self.review_attribute})
             reviews = reviews_element.text.strip() if reviews_element else "No matches found."
 
-            # Перевірка та оновлення кількості відгуків
             change_result = self.compare_reviews(reviews)
 
             if change_result == "Updating reviews.":
