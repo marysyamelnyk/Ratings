@@ -1,6 +1,6 @@
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, CallbackQueryHandler, ConversationHandler
-from .handlers import start, input_received, handle_confirmation, attribute_confirm, cancel
-from .states import URL, URL_CONFIRM, TAG, TAG_CONFIRM, ADDRESS, ADDRESS_CONFIRM, ATTRIBUTE, ATTRIBUTE_CONFIRM
+from bot.handlers import start, input_received, handle_confirmation, attribute_confirm, cancel
+from bot.states import URL, URL_CONFIRM, TAG, TAG_CONFIRM, ADDRESS, ADDRESS_CONFIRM, ATTRIBUTE, ATTRIBUTE_CONFIRM
 import settings
 
 def main():
