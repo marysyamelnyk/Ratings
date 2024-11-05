@@ -54,15 +54,15 @@ class Platform:
             return "No changes detected in reviews."
         
 
-#if __name__ == "__main__":
+if __name__ == "__main__":
 
-    #platform = Platform(
-        #url='https://ref-rating.com.ua/rating/studenthelp-com-ua',
-        #tags='span',
-        #adress='itemprop',
-        #review_attribute='reviewCount'
-    #)
-    #platform.pars_rating()
+    platform = Platform(
+        url='https://ref-rating.com.ua/rating/studenthelp-com-ua',
+        tags='span',
+        adress='itemprop',
+        review_attribute='reviewCount'
+    )
+    platform.pars_rating()
 
 
 #schedule.every(10).seconds.do(lambda: pars_rating(url, tags, classes))
