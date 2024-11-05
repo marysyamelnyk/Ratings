@@ -29,6 +29,7 @@ class Platform:
             change_result = self.compare_reviews(reviews)
 
             if change_result == "Updating reviews.":
+                print (f"Reviews number: {reviews}")
                 return f"Reviews number: {reviews}"
             else:
                 return change_result
@@ -58,14 +59,14 @@ if __name__ == "__main__":
 
     platform = Platform(
         url='https://ref-rating.com.ua/rating/studenthelp-com-ua',
-        tags='span',
-        adress='itemprop',
+        tag='span',
+        address='itemprop',
         review_attribute='reviewCount'
     )
     platform.pars_rating()
 
 
-#schedule.every(10).seconds.do(lambda: pars_rating(url, tags, classes))
+#schedule.every(10).seconds.do(lambda: pars_rating(url, tag, classes))
 
 #while True:
     #schedule.run_pending()
