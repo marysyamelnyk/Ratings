@@ -1,9 +1,7 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ConversationHandler, CallbackQueryHandler, ContextTypes
-import settings
-from ratings import Platform
-
-URL, URL_CONFIRM, TAG, TAG_CONFIRM, ADDRESS, ADDRESS_CONFIRM, ATTRIBUTE, ATTRIBUTE_CONFIRM = range(8)
+from telegram.ext import ContextTypes, ConversationHandler
+from parser.platform import Platform
+from .states import URL, URL_CONFIRM, TAG, TAG_CONFIRM, ADDRESS, ADDRESS_CONFIRM, ATTRIBUTE, ATTRIBUTE_CONFIRM
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return await prompt_user(update, "Please send the URL of the website you want to reach:")
@@ -48,7 +46,7 @@ async def attribute_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         review_attribute=context.user_data.get('review_attribute', '')
     )
     try:
-        result = platform.pars_rating() or "No data found or an error occurred during parsing."
+        result = platform.parse_rating() or "No data found or an error occurred during parsing."
     except Exception as e:
         result = f"An error occurred: {e}"
 
@@ -63,27 +61,3 @@ async def prompt_user(update: Update, message: str) -> int:
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text('Process cancelled.')
     return ConversationHandler.END
-
-def main():
-    application = ApplicationBuilder().token(settings.API_KEY).build()
-
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
-        states={
-            URL: [MessageHandler(filters.TEXT & ~filters.COMMAND, lambda u, c: input_received(u, c, 'url', URL_CONFIRM))],
-            URL_CONFIRM: [CallbackQueryHandler(lambda u, c: handle_confirmation(u, c, TAG, 'Great! Now, please send the HTML tag for the reviews:'), pattern='^(yes|no)$')],
-            TAG: [MessageHandler(filters.TEXT & ~filters.COMMAND, lambda u, c: input_received(u, c, 'tag', TAG_CONFIRM))],
-            TAG_CONFIRM: [CallbackQueryHandler(lambda u, c: handle_confirmation(u, c, ADDRESS, 'Please provide the attribute type (e.g., class, id):'), pattern='^(yes|no)$')],
-            ADDRESS: [MessageHandler(filters.TEXT & ~filters.COMMAND, lambda u, c: input_received(u, c, 'address', ADDRESS_CONFIRM))],
-            ADDRESS_CONFIRM: [CallbackQueryHandler(lambda u, c: handle_confirmation(u, c, ATTRIBUTE, 'Finally, please provide the attribute value (e.g., reviewCount):'), pattern='^(yes|no)$')],
-            ATTRIBUTE: [MessageHandler(filters.TEXT & ~filters.COMMAND, lambda u, c: input_received(u, c, 'review_attribute', ATTRIBUTE_CONFIRM))],
-            ATTRIBUTE_CONFIRM: [CallbackQueryHandler(attribute_confirm, pattern='^(yes|no)$')]
-        },
-        fallbacks=[CommandHandler('cancel', cancel)]
-    )
-
-    application.add_handler(conv_handler)
-    application.run_polling()
-
-if __name__ == '__main__':
-    main()
