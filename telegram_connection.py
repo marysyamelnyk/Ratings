@@ -1,13 +1,37 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardRemove
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ConversationHandler, CallbackQueryHandler, ContextTypes 
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, BotCommand
+from telegram.ext import (
+    ApplicationBuilder, CommandHandler, MessageHandler, filters,
+    ConversationHandler, CallbackQueryHandler, ContextTypes
+)
 import settings
 from ratings import Platform
 
 URL, URL_CONFIRM, TAG, TAG_CONFIRM, ADDRESS, ADDRESS_CONFIRM, ATTRIBUTE, ATTRIBUTE_CONFIRM = range(8)
 
+platform = Platform(
+    url='https://example.com',  # Тимчасова URL
+    tag='span',
+    address='class',
+    review_attribute='reviewCount'
+)
+# Функції для команд Telegram бота
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text('Please send the URL of the website you want to reach:')
     return URL
+
+async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    response = platform.pars_rating()
+    await update.message.reply_text(response)
+
+async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    response = platform.clear_file()
+    await update.message.reply_text(response)
+
+async def reset_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    response = platform.reset_data()
+    await update.message.reply_text(response)
+
+
 
 async def url_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data['url'] = update.message.text
@@ -73,9 +97,11 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text('Process cancelled.')
     return ConversationHandler.END
 
+# Основна функція для запуску бота
 def main():
     application = ApplicationBuilder().token(settings.API_KEY).build()
 
+ # Обробник розмовного процесу
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
@@ -92,7 +118,12 @@ def main():
     )
 
     application.add_handler(conv_handler)
+    application.add_handler(CommandHandler('check', check))
+    application.add_handler(CommandHandler('clear', clear_data))
+    application.add_handler(CommandHandler('reset', reset_data))
+   
+
     application.run_polling()
 
 if __name__ == '__main__':
-    main()
+    main()  

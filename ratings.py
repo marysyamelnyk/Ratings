@@ -17,7 +17,6 @@ class Platform:
     def _load_reviews(self) -> None:
       # Зчитуємо файл та заповнюємо словник наявними даними  
         file_path = 'reviews.txt'
-
         if os.path.exists(file_path):
             with open(file_path, 'r') as f:
                 lines = f.readlines()
@@ -72,6 +71,19 @@ class Platform:
         with open('reviews.txt', 'w') as f:
             for url, review_count in self.reviews_rating.items():
                 f.write(f"{url} Reviews number: {review_count}\n")
+
+    def clear_file(self) -> None:
+        file_path = 'reviews.txt'
+        if os.path.exists(file_path):
+            open("reviews.txt", 'w').close()
+            self.reviews_rating.clear()
+            return "File and data have been cleared."
+        else:
+            return "File is already empty."
+        
+    def reset_data(self) -> str:
+        self._load_reviews()
+        return "Data has been reset from the file."    
 
 
 
