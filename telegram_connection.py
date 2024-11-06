@@ -3,7 +3,7 @@ from telegram.ext import (ApplicationBuilder, CommandHandler, MessageHandler,
                           filters, ConversationHandler, CallbackQueryHandler, 
                           ContextTypes) 
 import settings
-from .ratings import Platform
+from ratings import Platform
 
 URL, URL_CONFIRM, TAG, TAG_CONFIRM, ADDRESS, ADDRESS_CONFIRM, ATTRIBUTE, ATTRIBUTE_CONFIRM = range(8)
 
@@ -17,22 +17,25 @@ async def receive_and_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE
     return await confirm_input(update, context, context.user_data[state_key], next_state, prompt_text)
 
 async def confirm_input(update: Update, context: ContextTypes.DEFAULT_TYPE, data: str, next_state: int, prompt_text: str = '') -> int:
-# Функція для запиту підтвердження даних користувача.
+    """Функція для запиту підтвердження даних користувача."""
     keyboard = [
         [InlineKeyboardButton("Yes", callback_data='yes')],
         [InlineKeyboardButton("No", callback_data='no')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    if isinstance(update, Update) and update.message:
-        await update.message.reply_text(f"Are you sure about: {data}?", reply_markup=reply_markup)
-    else:
+    if update.callback_query:  # Перевірка на наявність callback_query
         await update.callback_query.edit_message_text(f"Are you sure about: {data}?", reply_markup=reply_markup)
-    
-    if prompt_text:
-        await update.callback_query.edit_message_text(prompt_text, reply_markup=reply_markup)
+        if prompt_text:
+            await update.callback_query.edit_message_text(prompt_text, reply_markup=reply_markup)
+    elif update.message:  # Якщо це текстове повідомлення
+        await update.message.reply_text(f"Are you sure about: {data}?", reply_markup=reply_markup)
+        if prompt_text:
+            await update.message.reply_text(prompt_text, reply_markup=reply_markup)
 
-    return next_state
+    return await handle_confirmation(update, context, next_state)
+
+
 
 async def handle_confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE, next_state: int) -> int:
     query = update.callback_query
