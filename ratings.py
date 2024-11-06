@@ -5,6 +5,17 @@ from typing import Dict, List
 
 
 class Platform:
+
+    """
+    Ініціалізація класу Platform, який відповідає за отримання та збереження відгуків з сайту.
+        
+    :param url: URL сайту для отримання відгуків
+    :param tag: HTML тег для пошуку на сайті
+    :param address: Атрибут HTML елемента для пошуку
+    :param review_attribute: Атрибут з тегу для отримання кількості відгуків
+    
+    """
+
     def __init__(self, url: str, tag: str, address: str, review_attribute: str) -> None:
         self.url = url
         self.tag = tag
@@ -14,6 +25,8 @@ class Platform:
         self.reviews_rating: Dict[str, List[str]] = {}
         self._load_reviews()
 
+# Завантажує наявні відгуки з файлу і заповнює словник. 
+# Якщо файл не існує або порожній, словник залишиться порожнім.
     def _load_reviews(self) -> None:
       # Зчитуємо файл та заповнюємо словник наявними даними  
         file_path = 'reviews.txt'
@@ -25,6 +38,7 @@ class Platform:
                 if len(parts) == 2:
                     self.reviews_rating[parts[0]] = parts[1]
 
+# Отримує відгуки з сайту і порівнює їх з наявними.
     def pars_rating(self) -> str:
         try: 
             headers = {
@@ -49,6 +63,7 @@ class Platform:
         except requests.exceptions.RequestException as e:
             return f"An error occurred while fetching the reviews: {e}"
 
+# Порівнює нові відгуки з наявними в словнику і оновлює дані, якщо відгуки змінилися.
     def compare_reviews(self, reviews: str) -> str:
        # Перевіряємо наявність такого url в існуючих
         if self.url in self.reviews_rating:
@@ -66,12 +81,13 @@ class Platform:
         self._save_reviews()   
         return "Review has been updated."
         
-    
+# Перезаписує файл з оновленими відгуками.    
     def _save_reviews(self) -> None:
         with open('reviews.txt', 'w') as f:
             for url, review_count in self.reviews_rating.items():
                 f.write(f"{url} Reviews number: {review_count}\n")
 
+# Очищує файл і словник.
     def clear_file(self) -> None:
         file_path = 'reviews.txt'
         if os.path.exists(file_path):
@@ -80,7 +96,8 @@ class Platform:
             return "File and data have been cleared."
         else:
             return "File is already empty."
-        
+
+# Скидає дані, завантажуючи відгуки з файлу.        
     def reset_data(self) -> str:
         self._load_reviews()
         return "Data has been reset from the file."    
