@@ -37,13 +37,13 @@ class Platform:
             soup = BeautifulSoup(response.text, "html.parser")
         # Витягуємо потрібну інфу з сайту    
             reviews_element = soup.find(self.tag, {self.address: self.review_attribute})
-            print("Found reviews_element:", reviews_element)
+
         # Робимо її гарною (витягуємо тільки кі-сть відгуків)    
             reviews = reviews_element.text.strip() if reviews_element else "No matches found."
-            print(reviews)
         # Виклик функціїї яка дає нам зрозуміти зміни в кі-стях
             change_result = self.compare_reviews(reviews)
-            return change_result
+            
+            return f"{change_result}\n Reviews: {reviews}"
 
         except requests.exceptions.TooManyRedirects:
             return "Too many redirects occurred. Please check the URL."
@@ -51,12 +51,10 @@ class Platform:
             return f"An error occurred while fetching the reviews: {e}"
 
     def compare_reviews(self, reviews: str) -> str:
-        
        # Перевіряємо наявність такого url в існуючих
         if self.url in self.reviews_rating:
             existing_reviews = self.reviews_rating[self.url]
             if existing_reviews == reviews:
-                print("No changes have been detected.")
                 return "No changes have been detected."
             else:
             # Оновлюємо значення в словнику    
@@ -66,9 +64,9 @@ class Platform:
             self.reviews_rating[self.url] = reviews
 
       # Перезаписуємо файл з оновленими даними        
-        self._save_reviews()
-        print("Review has been updated.")    
+        self._save_reviews()   
         return "Review has been updated."
+        
     
     def _save_reviews(self) -> None:
         with open('reviews.txt', 'w') as f:
