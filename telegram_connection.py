@@ -1,7 +1,7 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, BotCommand
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, BotCommand
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters,
-    ConversationHandler, CallbackQueryHandler, ContextTypes
+    ConversationHandler, ContextTypes
 )
 import settings
 from ratings import Platform
@@ -18,7 +18,13 @@ platform = Platform(
 
 # Команда старту
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    await update.message.reply_text('Please send the URL of the website you want to reach:')
+    keyboard = [['/check', '/clear', '/reset'], ['/cancel']]
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
+    await update.message.reply_text(
+        'Welcome! Please use the commands below or follow the instructions.',
+        reply_markup=reply_markup
+    )
     return URL
 
 # Команда для перевірки рейтингу
@@ -76,38 +82,31 @@ async def attribute_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         review_attribute=context.user_data['review_attribute']
     )
     result = platform.pars_rating()
-    await update.callback_query.edit_message_text(result)
+    await update.message.reply_text(result, reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 # Функція для підтвердження вводу
 async def confirm_input(update: Update, context: ContextTypes.DEFAULT_TYPE, data: str, next_state: int) -> int:
-    keyboard = [
-        [InlineKeyboardButton("Yes", callback_data='yes')],
-        [InlineKeyboardButton("No", callback_data='no')]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    if isinstance(update, Update) and update.message:
-        await update.message.reply_text(f"Are you sure about: {data}?", reply_markup=reply_markup)
-    else:
-        await update.callback_query.edit_message_text(f"Are you sure about: {data}?", reply_markup=reply_markup)
+    keyboard = [['Yes', 'No']]
+    reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
     
+    await update.message.reply_text(f"Are you sure about: {data}?", reply_markup=reply_markup)
     return next_state
 
 # Функція для обробки підтвердження
 async def handle_confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE, next_state: int, prompt_text: str) -> int:
-    query = update.callback_query
-    await query.answer()
+    user_response = update.message.text
 
-    if query.data == 'yes':
-        await query.edit_message_text(prompt_text)
+    if user_response.lower() == 'yes':
+        await update.message.reply_text(prompt_text, reply_markup=ReplyKeyboardRemove())
         return next_state
     else:
+        await update.message.reply_text('Let\'s start over.', reply_markup=ReplyKeyboardRemove())
         return await start(update, context)
 
 # Команда для скасування
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    await update.message.reply_text('Process cancelled.')
+    await update.message.reply_text('Process cancelled.', reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 # Основна функція для запуску бота
@@ -119,13 +118,13 @@ def main():
         entry_points=[CommandHandler('start', start)],
         states={
             URL: [MessageHandler(filters.TEXT & ~filters.COMMAND, url_received)],
-            URL_CONFIRM: [CallbackQueryHandler(url_confirm, pattern='^(yes|no)$')],
+            URL_CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, url_confirm)],
             TAG: [MessageHandler(filters.TEXT & ~filters.COMMAND, tag_received)],
-            TAG_CONFIRM: [CallbackQueryHandler(tag_confirm, pattern='^(yes|no)$')],
+            TAG_CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, tag_confirm)],
             ADDRESS: [MessageHandler(filters.TEXT & ~filters.COMMAND, address_received)],
-            ADDRESS_CONFIRM: [CallbackQueryHandler(address_confirm, pattern='^(yes|no)$')],
+            ADDRESS_CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, address_confirm)],
             ATTRIBUTE: [MessageHandler(filters.TEXT & ~filters.COMMAND, attribute_received)],
-            ATTRIBUTE_CONFIRM: [CallbackQueryHandler(attribute_confirm, pattern='^(yes|no)$')]
+            ATTRIBUTE_CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, attribute_confirm)]
         },
         fallbacks=[CommandHandler('cancel', cancel)]
     )
