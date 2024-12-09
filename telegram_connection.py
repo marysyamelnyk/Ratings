@@ -18,30 +18,22 @@ platform = Platform(
 
 # Команда старту
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    keyboard = [['/check', '/clear', '/reset'], ['/cancel']]
+    keyboard = [['Check Rating', 'Clear File', 'Reset Data'], ['Cancel the proccess']]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
     await update.message.reply_text(
         'Welcome! Please use the commands below or follow the instructions.',
         reply_markup=reply_markup
     )
-    return URL
+    return ConversationHandler.END
 
-# Команда для перевірки рейтингу
+# Команда для перевірки рейтингу 
 async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    response = platform.pars_rating()
-    await update.message.reply_text(response)
-
-# Команда для очищення списку відгуків
-async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    response = platform.clear_file()
-    await update.message.reply_text(response)
-
-# Команда для збросу даних
-async def reset_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    response = platform.reset_data()
-    await update.message.reply_text(response)
-
+    await update.message.reply_text(
+        'Please send the URL of the website you want to reach:',
+        reply_markup=ReplyKeyboardRemove()
+    )
+    return URL
 
 # Обробка введеної URL
 async def url_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -109,13 +101,29 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text('Process cancelled.', reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
+# Команда для очищення списку відгуків
+async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    response = platform.clear_file()
+    await update.message.reply_text(response)
+
+# Команда для збросу даних
+async def reset_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    response = platform.reset_data()
+    await update.message.reply_text(response)
+
 # Основна функція для запуску бота
 def main():
     application = ApplicationBuilder().token(settings.API_KEY).build()
 
 # Обробник розмовного процесу
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
+        entry_points=[
+            CommandHandler('start', start),
+            MessageHandler(filters.TEXT & filters.Regex('^Check Rating$'), check),
+            MessageHandler(filters.TEXT & filters.Regex('^Clear File$'), clear_data),
+            MessageHandler(filters.TEXT & filters.Regex('^Reset Data$'), reset_data),
+            MessageHandler(filters.TEXT & filters.Regex('^Cancel the proccess$'), cancel),
+        ],
         states={
             URL: [MessageHandler(filters.TEXT & ~filters.COMMAND, url_received)],
             URL_CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, url_confirm)],
@@ -131,9 +139,7 @@ def main():
 
 # Обробники для команд
     application.add_handler(conv_handler)
-    application.add_handler(CommandHandler('check', check))
-    application.add_handler(CommandHandler('clear', clear_data))
-    application.add_handler(CommandHandler('reset', reset_data))
+    application.add_handler(CommandHandler('start', start))
    
 # Запуск бота
     application.run_polling()
