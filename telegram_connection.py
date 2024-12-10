@@ -1,3 +1,4 @@
+import re
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, BotCommand
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters,
@@ -7,7 +8,7 @@ import settings
 from ratings import Platform
 
 # Стани для ConversationHandler
-URL, XPATH, URL_CONFIRMED, XPATH_CONFIRMED, INFO_CONFIRMED = range(5)
+URL, XPATH, CONFIRM, EDIT = range(4)
 
 # Команда старту
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -23,65 +24,86 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 # Команда для перевірки рейтингу 
 async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        'Please send the URL of the website you want to reach:',
+        'Please send the URL of the website you want to check:',
         reply_markup=ReplyKeyboardRemove()
     )
     return URL
 
-
+#Отримання url
 async def url_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data['url'] = update.message.text
-    return await handle_confirmation(update, context, URL_CONFIRMED, 'Great! Now send me an XPath.')
-    
+    await update.message.reply_text('Great! Now send me an XPath.')
+    return XPATH
+
+#Отримання XPath     
 async def xpath_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data['xpath'] = update.message.text
-    return await handle_confirmation(update, context, XPATH_CONFIRMED, 'Please confirm your XPath.')
+    return CONFIRM
 
 
 # Підтвердження даних та перевірка
 async def info_confirmed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    url = context.user_data.get('url')
-    xpath = context.user_data.get('xpath')
+    url = context.user_data.get('url', '')
+    xpath = context.user_data.get('xpath', '')
 
-    confirmation_message = f"Please confirm your data:\nURL: {url}\nXPath: {xpath}"
-    # Викликаємо функцію підтвердження
-    return await confirm_input(update, context, confirmation_message, 'confirmed')
-
-# Функція для підтвердження вводу
-async def confirm_input(update: Update, context: ContextTypes.DEFAULT_TYPE, data: str, next_state: int) -> int:
     keyboard = [['Yes', 'No']]
-    reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
+    reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard = True, resize_keyboard = True)
+    await update.message.reply_text(
+        f"Here is the data you've provided:\n\n"
+        f"URL: {url}\n"
+        f"XPath: {xpath}\n\n"
+        "Is this correct?",
+        reply_markup=reply_markup
+    )
 
-    await update.message.reply_text(f"Are you sure about: {data}?", reply_markup=reply_markup)
-    return next_state
-
-# Функція для обробки підтвердження
-async def handle_confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE, next_state: int, prompt_text: str) -> int:
-    user_response = update.message.text
-
-    if user_response.lower() == 'yes':
-        # Перевірка наявності даних
-        if 'url' not in context.user_data or 'xpath' not in context.user_data:
-            await update.message.reply_text("Please provide both URL and XPath.")
-            return ConversationHandler.END
-
-        # Створення об'єкта Platform після підтвердження
-        url = context.user_data['url']
-        xpath = context.user_data['xpath']
-        platform = Platform(url=url, xpath=xpath)
-
-        result = platform.pars_rating()
-        await update.message.reply_text(result, reply_markup=ReplyKeyboardRemove())
-        return ConversationHandler.END
-    
-    elif user_response.lower() == 'no':
-        # Скидання процесу
-        await update.message.reply_text('Let\'s start over.', reply_markup=ReplyKeyboardRemove())
-        return await start(update, context)
-    
+    if update.message.text.lower() == 'yes':
+        return await process_platform(update, context)
     else:
-        await update.message.reply_text("Please respond with 'Yes' or 'No'.")
-        return next_state
+        keyboard = [['Change url', 'Change XPath']]
+        reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
+        await update.message.reply_text(
+            'Which data would you like to change?',
+            reply_markup = reply_markup
+        )
+
+        return EDIT
+
+
+# Функція для зміни вхідних даних користувачем
+async def edit_data(update: Update, context: ContextTypes.DEFAULT_TYPE)-> int:
+    choice = update.message.text.lower()
+    if choice == 'change url':
+        await update.message.reply_text('Please, send the new url:')
+        return URL
+    else:
+        await update.message.reply_text('Please, send the new XPath:')
+        return XPATH
+  
+    
+#Витягуємо потрібні дані з XPath та створюємо об'єкт класу Platform
+async def process_platform(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    url = context.user_data['url']
+    xpath = context.user_data['xpath']
+
+    try:
+        tag_match = re.search(r'/([\w-]+)(?:\[\@|\[|\]|$)', xpath)
+        tag = tag_match.group(1) if tag_match else 'unknown'
+        attr_match = re.search(r'\[@([\w-]+)="([^"]+)"\]', xpath)
+        attribute = attr_match.group(1) if attr_match else ''
+        attribute_value = attr_match.group(2) if attr_match else ''
+        
+        platform = Platform(
+            url=url,
+            tag=tag,
+            address=attribute,
+            review_attribute=attribute_value
+        )
+        result = platform.pars_rating()
+        await update.message.reply_text(result)
+    except Exception as e:
+        await update.message.reply_text(f"Error processing XPath: {str(e)}")
+    
+    return ConversationHandler.END
 
 # Команда для скасування
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -114,9 +136,8 @@ def main():
         states={
             URL: [MessageHandler(filters.TEXT & ~filters.COMMAND, url_received)],
             XPATH: [MessageHandler(filters.TEXT & ~filters.COMMAND, xpath_received)],
-            URL_CONFIRMED: [MessageHandler(filters.TEXT & ~filters.COMMAND, info_confirmed)],
-            XPATH_CONFIRMED: [MessageHandler(filters.TEXT & ~filters.COMMAND, info_confirmed)],
-            INFO_CONFIRMED: [MessageHandler(filters.TEXT & ~filters.COMMAND, info_confirmed)],
+            CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, info_confirmed)],
+            EDIT: [MessageHandler(filters.TEXT & ~filters.COMMAND, info_confirmed)],
         },
         fallbacks=[CommandHandler('cancel', cancel)]
     )
