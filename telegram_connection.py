@@ -7,14 +7,7 @@ import settings
 from ratings import Platform
 
 # Стани для ConversationHandler
-URL, URL_CONFIRM, TAG, TAG_CONFIRM, ADDRESS, ADDRESS_CONFIRM, ATTRIBUTE, ATTRIBUTE_CONFIRM = range(8)
-
-platform = Platform(
-    url='https://example.com',  # Тимчасова URL
-    tag='span',
-    address='class',
-    review_attribute='reviewCount'
-)
+URL, XPATH, URL_CONFIRMED, XPATH_CONFIRMED, INFO_CONFIRMED = range(5)
 
 # Команда старту
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -35,53 +28,30 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return URL
 
-# Обробка введеної URL
+
 async def url_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data['url'] = update.message.text
-    return await confirm_input(update, context, context.user_data['url'], URL_CONFIRM)
-
-async def url_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    return await handle_confirmation(update, context, TAG, 'Great! Now, please send the HTML tag for the reviews:')
-
-# Обробка введеного тегу
-async def tag_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    context.user_data['tag'] = update.message.text
-    return await confirm_input(update, context, context.user_data['tag'], TAG_CONFIRM)
-
-async def tag_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    return await handle_confirmation(update, context, ADDRESS, 'Please provide the attribute type (e.g., class, id):')
-
-# Обробка введеної адреси
-async def address_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    context.user_data['address'] = update.message.text
-    return await confirm_input(update, context, context.user_data['address'], ADDRESS_CONFIRM)
-
-# Обробка введеного атрибуту
-async def address_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    return await handle_confirmation(update, context, ATTRIBUTE, 'Finally, please provide the attribute value (e.g., reviewCount):')
-
-async def attribute_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    context.user_data['review_attribute'] = update.message.text
-    return await confirm_input(update, context, context.user_data['review_attribute'], ATTRIBUTE_CONFIRM)
+    return await handle_confirmation(update, context, URL_CONFIRMED, 'Great! Now send me an XPath.')
+    
+async def xpath_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    context.user_data['xpath'] = update.message.text
+    return await handle_confirmation(update, context, XPATH_CONFIRMED, 'Please confirm your XPath.')
 
 
-# Підтвердження атрибуту та перевірка
-async def attribute_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    platform = Platform(
-        url=context.user_data['url'],
-        tag=context.user_data['tag'],
-        address=context.user_data['address'],
-        review_attribute=context.user_data['review_attribute']
-    )
-    result = platform.pars_rating()
-    await update.message.reply_text(result, reply_markup=ReplyKeyboardRemove())
-    return ConversationHandler.END
+# Підтвердження даних та перевірка
+async def info_confirmed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    url = context.user_data.get('url')
+    xpath = context.user_data.get('xpath')
+
+    confirmation_message = f"Please confirm your data:\nURL: {url}\nXPath: {xpath}"
+    # Викликаємо функцію підтвердження
+    return await confirm_input(update, context, confirmation_message, 'confirmed')
 
 # Функція для підтвердження вводу
 async def confirm_input(update: Update, context: ContextTypes.DEFAULT_TYPE, data: str, next_state: int) -> int:
     keyboard = [['Yes', 'No']]
     reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
-    
+
     await update.message.reply_text(f"Are you sure about: {data}?", reply_markup=reply_markup)
     return next_state
 
@@ -90,11 +60,28 @@ async def handle_confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE
     user_response = update.message.text
 
     if user_response.lower() == 'yes':
-        await update.message.reply_text(prompt_text, reply_markup=ReplyKeyboardRemove())
-        return next_state
-    else:
+        # Перевірка наявності даних
+        if 'url' not in context.user_data or 'xpath' not in context.user_data:
+            await update.message.reply_text("Please provide both URL and XPath.")
+            return ConversationHandler.END
+
+        # Створення об'єкта Platform після підтвердження
+        url = context.user_data['url']
+        xpath = context.user_data['xpath']
+        platform = Platform(url=url, xpath=xpath)
+
+        result = platform.pars_rating()
+        await update.message.reply_text(result, reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
+    
+    elif user_response.lower() == 'no':
+        # Скидання процесу
         await update.message.reply_text('Let\'s start over.', reply_markup=ReplyKeyboardRemove())
         return await start(update, context)
+    
+    else:
+        await update.message.reply_text("Please respond with 'Yes' or 'No'.")
+        return next_state
 
 # Команда для скасування
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -103,12 +90,12 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 # Команда для очищення списку відгуків
 async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    response = platform.clear_file()
+    response = Platform.clear_file()
     await update.message.reply_text(response)
 
 # Команда для збросу даних
 async def reset_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    response = platform.reset_data()
+    response = Platform.reset_data()
     await update.message.reply_text(response)
 
 # Основна функція для запуску бота
@@ -126,22 +113,19 @@ def main():
         ],
         states={
             URL: [MessageHandler(filters.TEXT & ~filters.COMMAND, url_received)],
-            URL_CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, url_confirm)],
-            TAG: [MessageHandler(filters.TEXT & ~filters.COMMAND, tag_received)],
-            TAG_CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, tag_confirm)],
-            ADDRESS: [MessageHandler(filters.TEXT & ~filters.COMMAND, address_received)],
-            ADDRESS_CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, address_confirm)],
-            ATTRIBUTE: [MessageHandler(filters.TEXT & ~filters.COMMAND, attribute_received)],
-            ATTRIBUTE_CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, attribute_confirm)]
+            XPATH: [MessageHandler(filters.TEXT & ~filters.COMMAND, xpath_received)],
+            URL_CONFIRMED: [MessageHandler(filters.TEXT & ~filters.COMMAND, info_confirmed)],
+            XPATH_CONFIRMED: [MessageHandler(filters.TEXT & ~filters.COMMAND, info_confirmed)],
+            INFO_CONFIRMED: [MessageHandler(filters.TEXT & ~filters.COMMAND, info_confirmed)],
         },
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
-# Обробники для команд
+    # Обробники для команд
     application.add_handler(conv_handler)
     application.add_handler(CommandHandler('start', start))
-   
-# Запуск бота
+
+    # Запуск бота
     application.run_polling()
 
 if __name__ == '__main__':
