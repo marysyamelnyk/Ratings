@@ -1,13 +1,25 @@
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, BotCommand
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters,
     ConversationHandler, ContextTypes
 )
-import settings
-from ratings import Platform
+import api_key
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+from rating_parser.spiders.rating import RatingSpider
+from platform_class import Platform
 
 # Стани для ConversationHandler
 URL, XPATH, CONFIRM, EDIT = range(4)
+
+def read_result_from_file():
+    try:
+        with open('reviews.txt', 'r') as f:
+            result = f.read()
+        return result
+    except Exception as e:
+        return f"Error reading result: {str(e)}"
+
 
 # Команда старту
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -84,9 +96,15 @@ async def process_platform(update: Update, context: ContextTypes.DEFAULT_TYPE):
     xpath = context.user_data['xpath']
 
     try:
-        platform = Platform(url=url, xpath=xpath)  
-        result = platform.pars_rating() 
-        await update.message.reply_text(result)
+        process = CrawlerProcess(get_project_settings())
+        spider = RatingSpider(url = url, xpath = xpath)
+
+        process.crawl(spider)
+        process.start()
+
+        result = read_result_from_file()
+
+        await update.message.reply_text(f"Parsing result:\n{result}")
     except Exception as e:
         await update.message.reply_text(f"Error processing XPath: {str(e)}")
     
@@ -103,8 +121,9 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     xpath = context.user_data['xpath']
 
     platform = Platform(url = url, xpath = xpath)
-    response = platform.clear_file()
-    await update.message.reply_text(response)
+    result = platform.clear_file()
+
+    await update.message.reply_text(result)
 
 # Команда для збросу даних
 async def reset_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -112,12 +131,13 @@ async def reset_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     xpath = context.user_data['xpath']
 
     platform = Platform(url = url, xpath = xpath)
-    response = platform.reset_data()
-    await update.message.reply_text(response)
+    result = platform.reset_data()
+
+    await update.message.reply_text(result)
 
 # Основна функція для запуску бота
 def main():
-    application = ApplicationBuilder().token(settings.API_KEY).build()
+    application = ApplicationBuilder().token(api_key.API_KEY).build()
 
 # Обробник розмовного процесу
     conv_handler = ConversationHandler(
