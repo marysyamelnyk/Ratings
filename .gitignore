@@ -3,3 +3,9 @@ settings.py
 .vscode/
 .DS_Store
 __pycache__/
+__init__.py
+items.py
+pipelines.py
+scrapy.cfg
+middlewares.py
+api_key.py

@@ -1,4 +1,3 @@
-import re
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, BotCommand
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters,
@@ -85,18 +84,8 @@ async def process_platform(update: Update, context: ContextTypes.DEFAULT_TYPE):
     xpath = context.user_data['xpath']
 
     try:
-        tag_match = re.search(r"//(\w+)\[\@(\w+)='([^']+)'\]", xpath)
-        tag = tag_match.group(1) if tag_match else 'unknown'
-        attribute = tag_match.group(2) if tag_match else ''
-        attribute_value = tag_match.group(3) if tag_match else ''
-        
-        platform = Platform(
-            url=url,
-            tag=tag,
-            address=attribute,
-            review_attribute=attribute_value
-        )
-        result = platform.pars_rating()
+        platform = Platform(url=url, xpath=xpath)  
+        result = platform.pars_rating() 
         await update.message.reply_text(result)
     except Exception as e:
         await update.message.reply_text(f"Error processing XPath: {str(e)}")
@@ -110,12 +99,20 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 # Команда для очищення списку відгуків
 async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    response = Platform.clear_file()
+    url = context.user_data['url']
+    xpath = context.user_data['xpath']
+
+    platform = Platform(url = url, xpath = xpath)
+    response = platform.clear_file()
     await update.message.reply_text(response)
 
 # Команда для збросу даних
 async def reset_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    response = Platform.reset_data()
+    url = context.user_data['url']
+    xpath = context.user_data['xpath']
+
+    platform = Platform(url = url, xpath = xpath)
+    response = platform.reset_data()
     await update.message.reply_text(response)
 
 # Основна функція для запуску бота
