@@ -75,23 +75,3 @@ class Platform:
 
         except Exception as e:
             return f"Error resetting data: {str(e)}"
-
-        
-
-if __name__ == "__main__":
-
-    platform = Platform(
-        url='https://ref-rating.com.ua/rating/studenthelp-com-ua',
-        tag='span',
-        address='itemprop',
-        review_attribute='reviewCount'
-    )
-    print(platform.pars_rating())
-
-    platform2 = Platform(
-        url='https://www.otzyvua.net/uk/hotlaynhotline.html',
-        tag='span',
-        address='class',
-        review_attribute='count'
-    )
-    print(platform2.pars_rating())

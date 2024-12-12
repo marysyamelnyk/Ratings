@@ -66,16 +66,16 @@ async def xpath_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 # Підтвердження даних та перевірка
 async def info_confirmed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    if update.message.text.lower() == 'yes':
+    user_input = update.message.text.strip().lower()
+    if user_input == 'yes':
         return await process_platform(update, context)
     else:
         keyboard = [['Change url', 'Change XPath']]
         reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
         await update.message.reply_text(
             'Which data would you like to change?',
-            reply_markup = reply_markup
+            reply_markup=reply_markup
         )
-
         return EDIT
 
 
@@ -97,14 +97,15 @@ async def process_platform(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     try:
         process = CrawlerProcess(get_project_settings())
-        spider = RatingSpider(url = url, xpath = xpath)
-
-        process.crawl(spider)
+        process.crawl(RatingSpider, url=url, xpath=xpath)
         process.start()
 
         result = read_result_from_file()
 
-        await update.message.reply_text(f"Parsing result:\n{result}")
+        if not result:
+            await update.message.reply_text("No result found or file is empty.")
+        else:
+            await update.message.reply_text(f"Parsing result:\n{result}")
     except Exception as e:
         await update.message.reply_text(f"Error processing XPath: {str(e)}")
     
