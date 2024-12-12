@@ -6,7 +6,7 @@ from telegram.ext import (
 import api_key
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-from rating_parser.spiders.rating import RatingSpider
+from rating_parser.ratings_parser.spiders.rating import RatingSpider
 from platform_class import Platform
 
 # Стани для ConversationHandler
