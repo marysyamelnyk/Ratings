@@ -38,11 +38,6 @@ async def url_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 #Отримання XPath     
 async def xpath_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data['xpath'] = update.message.text
-    return CONFIRM
-
-
-# Підтвердження даних та перевірка
-async def info_confirmed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     url = context.user_data.get('url', '')
     xpath = context.user_data.get('xpath', '')
 
@@ -55,7 +50,11 @@ async def info_confirmed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         "Is this correct?",
         reply_markup=reply_markup
     )
+    return CONFIRM
 
+
+# Підтвердження даних та перевірка
+async def info_confirmed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if update.message.text.lower() == 'yes':
         return await process_platform(update, context)
     else:
@@ -78,19 +77,18 @@ async def edit_data(update: Update, context: ContextTypes.DEFAULT_TYPE)-> int:
     else:
         await update.message.reply_text('Please, send the new XPath:')
         return XPATH
-  
-    
+
+
 #Витягуємо потрібні дані з XPath та створюємо об'єкт класу Platform
 async def process_platform(update: Update, context: ContextTypes.DEFAULT_TYPE):
     url = context.user_data['url']
     xpath = context.user_data['xpath']
 
     try:
-        tag_match = re.search(r'/([\w-]+)(?:\[\@|\[|\]|$)', xpath)
+        tag_match = re.search(r"//(\w+)\[\@(\w+)='([^']+)'\]", xpath)
         tag = tag_match.group(1) if tag_match else 'unknown'
-        attr_match = re.search(r'\[@([\w-]+)="([^"]+)"\]', xpath)
-        attribute = attr_match.group(1) if attr_match else ''
-        attribute_value = attr_match.group(2) if attr_match else ''
+        attribute = tag_match.group(2) if tag_match else ''
+        attribute_value = tag_match.group(3) if tag_match else ''
         
         platform = Platform(
             url=url,

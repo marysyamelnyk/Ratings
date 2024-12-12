@@ -34,7 +34,7 @@ class Platform:
             with open(file_path, 'r') as f:
                 lines = f.readlines()
             for line in lines:
-                parts = line.strip().split(" Reviews number: ")
+                parts = line.strip().split("Reviews number: ")
                 if len(parts) == 2:
                     self.reviews_rating[parts[0]] = parts[1]
 
