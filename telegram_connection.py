@@ -4,21 +4,13 @@ from telegram.ext import (
     ConversationHandler, ContextTypes
 )
 import api_key
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
-from rating_parser.ratings_parser.spiders.rating import RatingSpider
+#from scrapy.crawler import CrawlerProcess
+#from scrapy.utils.project import get_project_settings
+#from rating_parser.ratings_parser.spiders.rating import RatingSpider
 from platform_class import Platform
 
 # Стани для ConversationHandler
 URL, XPATH, CONFIRM, EDIT = range(4)
-
-def read_result_from_file():
-    try:
-        with open('reviews.txt', 'r') as f:
-            result = f.read()
-        return result
-    except Exception as e:
-        return f"Error reading result: {str(e)}"
 
 
 # Команда старту
@@ -92,23 +84,31 @@ async def edit_data(update: Update, context: ContextTypes.DEFAULT_TYPE)-> int:
 
 #Витягуємо потрібні дані з XPath та створюємо об'єкт класу Platform
 async def process_platform(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    url = context.user_data['url']
-    xpath = context.user_data['xpath']
+    url = context.user_data.get('url')
+    xpath = context.user_data.get('xpath')
+
+    if not url or not xpath:
+        await update.message.reply_text("URL or XPath is missing. Please provide valid inputs.")
+        return ConversationHandler.END
 
     try:
-        process = CrawlerProcess(get_project_settings())
-        process.crawl(RatingSpider, url=url, xpath=xpath)
-        process.start()
-
-        result = read_result_from_file()
+        platform = Platform(url=url, xpath=xpath)
+        
+        # Перевірка, чи `parser` є асинхронним
+        result = platform.parser()
 
         if not result:
             await update.message.reply_text("No result found or file is empty.")
         else:
             await update.message.reply_text(f"Parsing result:\n{result}")
     except Exception as e:
-        await update.message.reply_text(f"Error processing XPath: {str(e)}")
+        await update.message.reply_text(f"An error {e} occurred while processing your request. Please try again later.")
     
+    return ConversationHandler.END
+
+# Команда для скасування
+async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    await update.message.reply_text('Process cancelled.', reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 # Команда для скасування

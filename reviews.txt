@@ -1,3 +1,12 @@
-https://www.otzyvua.net/uk/hotlaynhotline.html   Reviews number: 185 відгуків  / 41632 перегляда
-https://ref-rating.com.ua/rating/studenthelp-com-ua  Reviews number: 52
-https://scrapfly.io/blog/parsing-html-with-xpath/#xpath-in-python Reviews number: <time title="originally released Feb 07, 2022">Aug 22, 2024</time>
+https://www.otzyvua.net/uk/hotlaynhotline.html            Reviews number: 185 відгуків  / 41632 перегляда
+https://ref-rating.com.ua/rating/studenthelp-com-ua           Reviews number: 52
+https://scrapfly.io/blog/parsing-html-with-xpath/#xpath-in-python          Reviews number: <time title="originally released Feb 07, 2022">Aug 22, 2024</time>
+https://scrapfly.io/blog/parsing-html-with-xpath/#xpath-in-python         Reviews number: <time title="originally released Feb 07, 2022">Aug 22, 2024</time>
+https://scrapfly.io/blog/parsing-html-with-xpath/#xpath-in-python        Reviews number: <time title="originally released Feb 07, 2022">Aug 22, 2024</time>
+https://scrapfly.io/blog/parsing-html-with-xpath/#xpath-in-python       Reviews number: <time title="originally released Feb 07, 2022">Aug 22, 2024</time>
+https://scrapfly.io/blog/parsing-html-with-xpath/#xpath-in-python      Reviews number: <time title="originally released Feb 07, 2022">Aug 22, 2024</time>
+https://ref-rating.com.ua/rating/studenthelp-com-ua     Reviews number: [<Element span at 0x104790640>]
+https://ref-rating.com.ua/rating/studenthelp-com-ua    Reviews number: [<Element span at 0x106e305f0>]
+https://ref-rating.com.ua/rating/studenthelp-com-ua   Reviews number: ['52']
+https://www.otzyvua.net/uk/hotlaynhotline.html  Reviews number: ['185']
+https://musiquedelangue.com/rozmovni-kluby/ Reviews number: ['500']

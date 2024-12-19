@@ -1,5 +1,9 @@
 import os
 from typing import Dict
+from lxml import html
+import requests
+
+
 
 
 class Platform:
@@ -10,6 +14,31 @@ class Platform:
 
         self.reviews_rating: Dict[str, str] = {}
         self._load_reviews()
+
+
+
+    def parser(self):
+        try:
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
+            }
+
+            page = requests.get(self.url, headers=headers, allow_redirects=False)
+            page.raise_for_status() 
+        except requests.RequestException as e:
+            return f"Error fetching page: {e}"
+
+        try:
+            tree = html.fromstring(page.content)
+            reviews_elements = tree.xpath(self.xpath)
+            reviews = [element.text_content() for element in reviews_elements]
+
+            result = self.compare_reviews(reviews)
+            return f"{result}\n Reviews: {reviews}"
+        
+        except Exception as e:
+            return f"Error parsing page: {e}"
+    
 
 # Завантажує наявні відгуки з файлу і заповнює словник. 
 # Якщо файл не існує або порожній, словник залишиться порожнім.
