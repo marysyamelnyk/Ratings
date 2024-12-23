@@ -4,9 +4,6 @@ from telegram.ext import (
     ConversationHandler, ContextTypes
 )
 import api_key
-#from scrapy.crawler import CrawlerProcess
-#from scrapy.utils.project import get_project_settings
-#from rating_parser.ratings_parser.spiders.rating import RatingSpider
 from platform_class import Platform
 
 # Стани для ConversationHandler
@@ -17,7 +14,7 @@ URL, XPATH, CONFIRM, EDIT = range(4)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     keyboard = [['Check Rating', 'Clear File', 'Reset Data'], ['Cancel the proccess']]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-    
+
     context.user_data['url'] = None
     context.user_data['xpath'] = None
 
