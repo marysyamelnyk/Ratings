@@ -1,30 +1,25 @@
 import os
-from typing import Dict
+from typing import Dict, List
 from lxml import html
 import requests
-
-
-
+import threading
 
 class Platform:
+    _lock = threading.Lock()
 
     def __init__(self, url: str, xpath: str) -> None:
         self.url = url
         self.xpath = xpath
-
         self.reviews_rating: Dict[str, str] = {}
         self._load_reviews()
-
-
 
     def parser(self):
         try:
             headers = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
             }
-
             page = requests.get(self.url, headers=headers, allow_redirects=False)
-            page.raise_for_status() 
+            page.raise_for_status()
         except requests.RequestException as e:
             return f"Error fetching page: {e}"
 
@@ -35,72 +30,59 @@ class Platform:
 
             result = self.compare_reviews(reviews)
             return f"{result}\n Reviews: {reviews}"
-        
         except Exception as e:
             return f"Error parsing page: {e}"
-    
 
-# Завантажує наявні відгуки з файлу і заповнює словник. 
-# Якщо файл не існує або порожній, словник залишиться порожнім.
     def _load_reviews(self) -> None:
-      # Зчитуємо файл та заповнюємо словник наявними даними  
         file_path = 'reviews.txt'
         if os.path.exists(file_path):
             with open(file_path, 'r') as f:
                 lines = f.readlines()
             for line in lines:
-                parts = line.strip().split("Reviews number: ")
+                parts = line.strip().split(" Reviews number: ")
                 if len(parts) == 2:
-                    self.reviews_rating[parts[0]] = parts[1]
+                    url, reviews = parts
+                    self.reviews_rating[url] = reviews.strip()
 
+    def compare_reviews(self, reviews: List[str]) -> str:
+        reviews_str = ", ".join(reviews)
 
-# Порівнює нові відгуки з наявними в словнику і оновлює дані, якщо відгуки змінилися.
-    def compare_reviews(self, reviews: str) -> str:
-       # Перевіряємо наявність такого url в існуючих
         if self.url in self.reviews_rating:
             existing_reviews = self.reviews_rating[self.url]
-            if existing_reviews == reviews:
+            if existing_reviews == reviews_str:
                 return "No changes have been detected."
             else:
-            # Оновлюємо значення в словнику    
-                self.reviews_rating[self.url] = reviews
+                self.reviews_rating[self.url] = reviews_str
         else:
-          # Додаємо значення якщо такого не було  
-            self.reviews_rating[self.url] = reviews
+            self.reviews_rating[self.url] = reviews_str
 
-      # Перезаписуємо файл з оновленими даними        
-        self._save_reviews()   
+        self._save_reviews()
         return "Review has been updated."
-        
-# Перезаписує файл з оновленими відгуками.    
+
     def _save_reviews(self) -> None:
+        file_path = 'reviews.txt'
         try:
-            with open('reviews.txt', 'w') as f:
-                for url, review_count in self.reviews_rating.items():
-                    f.write(f"{url} Reviews number: {review_count}\n")
-
+            with self._lock:
+                with open(file_path, 'w') as f:
+                    for url, reviews in self.reviews_rating.items():
+                        f.write(f"{url} Reviews number: {reviews}\n")
+            print(f"Reviews saved successfully to {file_path}.")  # Логування
         except Exception as e:
-            raise Exception(f"Error saving reviews: {str(e)}")            
+            print(f"Error saving reviews: {e}")
 
-# Очищує файл і словник.
+
+    # Очищує файл і словник.
     def clear_file(self) -> None:
-        try:
-            file_path = 'reviews.txt'
-            if os.path.exists(file_path):
-                open("reviews.txt", 'w').close()
-                self.reviews_rating.clear()
-                return "File and data have been cleared."
-            else:
-                return "File is already empty."
-            
-        except Exception as e:
-            return f"Error clearing file: {str(e)}"    
+        file_path = 'reviews.txt'
+        if os.path.exists(file_path):
+            open("reviews.txt", 'w').close()
+            self.reviews_rating.clear()
+            return "File and data have been cleared."
+        else:
+            return "File is already empty."
 
 # Скидає дані, завантажуючи відгуки з файлу.        
     def reset_data(self) -> str:
-        try:
-            self._load_reviews()
-            return "Data has been reset from the file."    
+        self._load_reviews()
+        return "Data has been reset from the file."
 
-        except Exception as e:
-            return f"Error resetting data: {str(e)}"

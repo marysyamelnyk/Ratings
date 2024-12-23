@@ -17,6 +17,9 @@ URL, XPATH, CONFIRM, EDIT = range(4)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     keyboard = [['Check Rating', 'Clear File', 'Reset Data'], ['Cancel the proccess']]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    
+    context.user_data['url'] = None
+    context.user_data['xpath'] = None
 
     await update.message.reply_text(
         'Welcome! Please use the commands below or follow the instructions.',
