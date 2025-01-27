@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">Web Parser</div>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/login">Log In</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Registration Section -->
+    <section class="form-section">
+        <div class="container">
+            <h2>Create Your Account</h2>
+            <form class="auth-form" method="POST" action="/register">
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            
+                <button type="submit">Sign Up</button>
+            </form>                 
+        </div>
+    </section>
+
+</body>
+</html>

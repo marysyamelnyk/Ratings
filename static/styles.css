@@ -149,63 +149,6 @@ body {
     color: #555;
 }
 
-/* Parser Form Section */
-.parser-form {
-    padding: 4rem 2rem;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.6); /* More transparent */
-    border-radius: 15px;
-    margin: 2rem auto;
-    color: #333;
-    width: 80%; /* Narrower */
-    max-width: 1000px;
-}
-
-.parser-form h2 {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    color: #333;
-}
-
-.parser-form form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-}
-
-.parser-form input {
-    width: 80%;
-    max-width: 500px;
-    padding: 0.7rem;
-    border: 2px solid #ddd;
-    background: rgba(255, 255, 255, 0.85);
-    border-radius: 50px;
-    font-size: 1rem;
-    color: #333;
-}
-
-.parser-form input::placeholder {
-    color: #999;
-}
-
-.parser-form button {
-    background: rgba(255, 255, 255, 0.8);
-    color: #ff80bf;
-    border: none;
-    padding: 0.7rem 2rem;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
-}
-
-.parser-form button:hover {
-    background: #ff80bf;
-    color: white;
-    transform: scale(1.05);
-}
 
 /* Footer */
 .footer {

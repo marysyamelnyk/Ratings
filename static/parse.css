@@ -1,0 +1,129 @@
+/* General Body Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(120deg, #80d0ff, #ff80bf);
+    background-attachment: fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header */
+.header {
+    background: rgba(255, 255, 255, 0.85);
+    margin: 1rem auto;
+    padding: 1rem 2rem;
+    width: 90%;
+    max-width: 1000px;
+    border-radius: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Parser Section */
+.parser-section {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 15px;
+    margin: 2rem auto;
+    width: 80%;
+    max-width: 600px;
+}
+
+.parser-section input {
+    width: 100%;
+    padding: 0.7rem;
+    margin: 0.5rem 0;
+    border: 2px solid #ddd;
+    border-radius: 50px;
+    font-size: 1rem;
+}
+
+.parser-section button {
+    background: #ff80bf;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.parser-section button:hover {
+    background: #ff4f9f;
+    transform: scale(1.05);
+}
+
+/* Results Section */
+.results-section {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 15px;
+    margin: 2rem auto;
+    width: 90%;
+    max-width: 100%;
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center;     /* Center content vertically */
+}
+
+.results-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+    table-layout: auto; /* Ensure the table adjusts its width dynamically */
+}
+
+.results-section th,
+.results-section td {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.results-section th {
+    background: #ff80bf;
+    color: white;
+}
+
+.results-section td {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+    .parser-section {
+        width: 90%;
+    }
+
+    .results-section table {
+        font-size: 0.9rem;
+    }
+
+    .results-section th, .results-section td {
+        padding: 0.6rem;
+    }
+}
+#refresh-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 8px 16px;
+    margin-left: auto;
+}
+
+#refresh-btn:hover {
+    background-color: #45a049;
+}

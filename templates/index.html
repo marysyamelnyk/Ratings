@@ -5,41 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Parser</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <script>
-        function callPythonFunction() {
-            const url = document.getElementById('url').value;
-            const xpath = document.getElementById('xpath').value;
-
-            const resultContent = document.getElementById('result-content');
-            resultContent.innerText = 'Parsing data... Please wait.';
-
-            fetch('/parse', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url, xpath })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.error) {
-                    resultContent.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
-                } else {
-                    resultContent.innerHTML = `
-                        <p><strong>Parsed Data:</strong></p>
-                        <pre>${data.result}</pre>
-                    `;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                resultContent.innerHTML = '<p style="color: red;">An error occurred while parsing the data!</p>';
-            });
-        }
-    </script>
     
 </head>
 <body>
@@ -48,9 +13,9 @@
             <div class="logo">Web Parser</div>
             <nav>
                 <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Login</a></li>
-                    <li><a href="#">Sign Up</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Sign Up</a></li>
                 </ul>
             </nav>
         </div>
@@ -62,7 +27,7 @@
                 <h1>Extract Data Effortlessly</h1>
                 <p>Web Parser simplifies web scraping with an easy-to-use interface. Start parsing URLs and extracting data in seconds.</p>
                 <!-- Updated button to navigate to the form -->
-                <a href="#parser-form" class="cta-button">Get Started</a>
+                <a href="/register" class="cta-button">Sign Up Now</a>
             </div>
         </section>
 
@@ -86,28 +51,6 @@
             </div>
         </section>
 
-        <!-- Added an id for the parser form section -->
-        <section id="parser-form" class="parser-form">
-            <div class="container">
-                <h2>Start Parsing</h2>
-                <form id="parserForm" onsubmit="event.preventDefault(); callPythonFunction();">
-                    <input type="url" id="url" name="url" placeholder="Website URL" required>
-                    <input type="text" id="xpath" name="xpath" placeholder="XPath" required>
-                    <button type="submit">Start Parsing</button>
-                </form>
-            </div>
-        </section>
-        
-        <!-- Result Section -->
-        <section id="result-section" class="result-section">
-            <div class="container">
-                <h2>Parsed Data</h2>
-                <div id="result-content">
-                    <p>No data parsed yet. Enter a URL and XPath to get started.</p>
-                </div>
-            </div>
-        </section>
-    </main>
 
     <footer class="footer">
         <div class="container">
@@ -119,30 +62,6 @@
             </ul>
         </div>
     </footer>
-
-    <script>
-        // Get the form and result section elements
-        const parserForm = document.getElementById('parserForm');
-        const resultContent = document.getElementById('result-content');
-    
-        // Handle form submission
-        parserForm.addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent default form submission behavior
-    
-            // Get user inputs
-            const url = document.getElementById('url').value;
-            const xpath = document.getElementById('xpath').value;
-    
-            // Simulate fetching and parsing data (replace this with your actual logic)
-            const simulatedParsedData = `Parsed data from URL: ${url} using XPath: ${xpath}`;
-    
-            // Update the result section
-            resultContent.innerHTML = `
-                <p><strong>Parsed Data:</strong></p>
-                <p>${simulatedParsedData}</p>
-            `;
-        });
-    </script>
     
 </body>
 </html>

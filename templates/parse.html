@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Parser</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='parse.css') }}">
+    <script>
+        // Функція для обробки логіки Parse
+        async function handleParse() {
+            const url = document.getElementById('url').value;
+            const xpath = document.getElementById('xpath').value;
+
+            if (!url || !xpath) {
+                alert("Please enter both URL and XPath.");
+                return;
+            }
+
+            document.getElementById('parse-status').innerText = "Parsing in progress...";
+
+            try {
+                const response = await fetch('/parse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url, xpath })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data.error) {
+                    alert(`Error: ${data.error}`);
+                } else {
+                    alert("Parsing successful!");
+                    loadResults(); // Оновлення таблиці результатів
+                }
+            } catch (error) {
+                alert("An error occurred during parsing.");
+                console.error(error);
+            } finally {
+                document.getElementById('parse-status').innerText = "";
+            }
+        }
+
+        // Функція для завантаження результатів в таблицю
+        async function loadResults() {
+            try {
+                const response = await fetch('/results');
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+
+                const results = await response.json();
+                const tableBody = document.getElementById('results-body');
+                tableBody.innerHTML = "";
+
+                results.forEach((result) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${result.url}</td>
+                        <td>${result.xpath}</td>
+                        <td>${result.result}</td>
+                        <td>${new Date(result.timestamp).toLocaleString()}</td>
+                        <td><button onclick="deleteResult('${result.url}')">Delete</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Failed to load results:", error);
+            }
+        }
+
+        // Функція для видалення результату за URL
+        async function deleteResult(url) {
+            console.log(`Delete button clicked for URL: ${url}`);  // Додано логування
+
+            if (!url) {
+                alert("Invalid URL.");
+                return;
+            }
+
+            if (confirm("Are you sure you want to delete this record?")) {
+                try {
+                    const response = await fetch(`/delete_result?url=${encodeURIComponent(url)}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    if (data.error) {
+                        alert(`Error: ${data.error}`);
+                    } else {
+                        alert("Record deleted successfully!");
+                        loadResults(); // Оновлення таблиці
+                    }
+                } catch (error) {
+                    alert("An error occurred while deleting the record.");
+                    console.error(error);
+                }
+            }
+        }
+
+        // Завантаження результатів, коли сторінка готова
+        document.addEventListener("DOMContentLoaded", loadResults);
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">Web Parser</div>
+            <nav>
+                <ul>
+                    <li><a href="/logout">Log Out</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Parser Section -->
+    <main>
+        <section class="parser-section">
+            <div class="container">
+                <h2>Web Parser</h2>
+                <p>Enter a URL and XPath to parse data:</p>
+                <form onsubmit="event.preventDefault(); handleParse();">
+                    <input type="url" id="url" placeholder="Enter URL" required>
+                    <input type="text" id="xpath" placeholder="Enter XPath" required>
+                    <button type="submit">Parse</button>
+                </form>
+                <p id="parse-status" style="color: green;"></p>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section">
+            <div class="container">
+                <h2>Parsing Results</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>URL</th>
+                            <th>XPath</th>
+                            <th>Result</th>
+                            <th>Timestamp</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body">
+                        <!-- Results will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
+
+
