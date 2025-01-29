@@ -45,7 +45,7 @@ USER appuser
 COPY . .
 
 # Expose the port that the application listens on.
-EXPOSE 5001
+EXPOSE 80
 
 # Run the application.
-CMD gunicorn -w 4 -b 0.0.0.0:5001 app:app
+CMD gunicorn -w 4 -b 0.0.0.0:80 app:app
