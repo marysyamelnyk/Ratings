@@ -26,7 +26,14 @@ class Platform:
         try:
             tree = html.fromstring(page.content)
             reviews_elements = tree.xpath(self.xpath)
-            reviews = [element.text_content() for element in reviews_elements]
+
+            if reviews_elements and isinstance(reviews_elements[0], html.HtmlElement):
+                reviews = [element.text.strip() for element in reviews_elements if element.text and element.text.strip()]
+            elif reviews_elements:
+                reviews = [text.strip() for text in reviews_elements if text.strip()]
+            else:
+                reviews = []    
+            
 
             result = self.compare_reviews(reviews)
             return f"{result}\n Reviews: {reviews}"

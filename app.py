@@ -59,7 +59,7 @@ def parse():
             result = platform.parser()
             print(f"Raw result from platform.parser(): {result}")  # Debugging print
             
-            pattern = r"\['(\d+)'\]"
+            pattern = r"\['(.*?)'\]"
             match = re.search(pattern, result)
 
             if not match:
