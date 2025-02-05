@@ -97,6 +97,7 @@ body {
     color: #333;
     width: 80%;
     max-width: 600px;
+    margin-bottom: 230px;
 }
 
 .form-section h2 {
@@ -147,3 +148,39 @@ body {
     transform: scale(1.05);
 }
 
+/* Footer */
+.footer {
+    background: rgba(255, 255, 255, 0.75); /* Slightly transparent */
+    color: #333;
+    padding: 2rem 0;
+    text-align: center;
+    border-top: 1px solid #ddd;
+}
+
+.footer ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.footer ul li a {
+    text-decoration: none;
+    color: #333;
+    transition: color 0.3s;
+}
+
+.footer ul li a:hover {
+    color: #ff80bf;
+}
+
+html, body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1; /* Дозволяє контейнеру займати весь доступний простір */
+}
