@@ -7,13 +7,25 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='parse.css') }}">
     <script>
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+
+            // Затримка для автоматичного зникнення через 5 секунд
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);  // 5000 мілісекунд = 5 секунд
+        }
+
         // Функція для обробки логіки Parse
         async function handleParse() {
             const url = document.getElementById('url').value;
             const xpath = document.getElementById('xpath').value;
 
             if (!url || !xpath) {
-                alert("Please enter both URL and XPath.");
+                showToast("Please enter both URL and XPath.");
                 return;
             }
 
@@ -32,15 +44,19 @@
 
                 const data = await response.json();
                 if (data.error) {
-                    alert(`Error: ${data.error}`);
+                    showToast(`Error: ${data.error}`);
                 } else {
-                    alert("Parsing successful!");
+                    showToast("Parsing successful!");
                     loadResults(); // Оновлення таблиці результатів
                 }
             } catch (error) {
-                alert("An error occurred during parsing.");
+                showToast("An error occurred during parsing.");
                 console.error(error);
             } finally {
+                
+                document.getElementById('url').value = '';
+                document.getElementById('xpath').value = '';
+
                 document.getElementById('parse-status').innerText = "";
             }
         }
@@ -64,7 +80,7 @@
                         <td>${result.xpath}</td>
                         <td>${result.result}</td>
                         <td>${new Date(result.timestamp).toLocaleString()}</td>
-                        <td><button onclick="deleteResult('${result.url}')">Delete</button></td>
+                        <td><button class="delete-button" onclick="deleteResult('${result.url}')">Delete</button></td>
                     `;
                     tableBody.appendChild(row);
                 });
@@ -78,7 +94,7 @@
             console.log(`Delete button clicked for URL: ${url}`);  // Додано логування
 
             if (!url) {
-                alert("Invalid URL.");
+                showToast("Invalid URL.");
                 return;
             }
 
@@ -94,13 +110,13 @@
 
                     const data = await response.json();
                     if (data.error) {
-                        alert(`Error: ${data.error}`);
+                        showToast(`Error: ${data.error}`);
                     } else {
-                        alert("Record deleted successfully!");
+                        showToast("Record deleted successfully!");
                         loadResults(); // Оновлення таблиці
                     }
                 } catch (error) {
-                    alert("An error occurred while deleting the record.");
+                    showToast("An error occurred while deleting the record.");
                     console.error(error);
                 }
             }
@@ -111,13 +127,17 @@
     </script>
 </head>
 <body>
+
+    <div id="toast" class="toast"></div>
+
     <!-- Header -->
     <header class="header">
         <div class="container header-container">
             <div class="logo">Web Parser</div>
             <nav>
                 <ul>
-                    <li><a href="/logout">Log Out</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/logout">Log Out</a></li>                 
                 </ul>
             </nav>
         </div>
@@ -148,7 +168,7 @@
                             <th>URL</th>
                             <th>XPath</th>
                             <th>Result</th>
-                            <th>Timestamp</th>
+                            <th>Time</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -156,6 +176,11 @@
                         <!-- Results will be dynamically loaded here -->
                     </tbody>
                 </table>
+
+                <form action="/delete_profile" method="POST" class="delete-profile-form"
+                    onsubmit="return confirm('Are you sure you want to delete your profile?');">
+                    <button type="submit">Delete my profile</button>
+                </form> 
             </div>
         </section>
     </main>

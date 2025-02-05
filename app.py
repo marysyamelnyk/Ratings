@@ -173,6 +173,7 @@ def results():
     } for result in user_results])
 
 @app.route('/delete_result', methods=['DELETE'])
+@login_required
 def delete_result():
     url = request.args.get('url')
     if not url:
@@ -185,6 +186,21 @@ def delete_result():
         return jsonify({"message": "Record deleted successfully."}), 200
 
     return jsonify({"error": "Record not found."}), 404
+
+@app.route('/delete_profile', methods=["POST"])
+@login_required
+def delete_profile():
+    try:
+        ParsingResult.query.filter_by(user_email=current_user.email).delete()
+        User.query.filter_by(email=current_user.email).delete()
+        db.session.commit()
+        logout()
+        flash("Your profile has been deleted successfully.", "success")
+        return redirect(url_for("register"))
+    except Exception as e:
+        db.session.rollback()
+        flash("An error occurred while deleting your profile.", "error")
+        return redirect(url_for("parse"))
 
 with app.app_context():
     db.create_all()
