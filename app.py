@@ -22,6 +22,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
+    telegram_id = db.Column(db.String(50), unique=True, nullable=True)
 
 # ParsingResult model
 class ParsingResult(db.Model):

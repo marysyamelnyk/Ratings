@@ -252,6 +252,27 @@ button.delete-button:hover {
     transform: scale(1.05);
 }
 
+button.notify-button {
+    text-decoration: none; /* Removes underline */
+    background: rgba(255, 255, 255, 0.8);
+    color: #ff80bf;
+    border: none;
+    padding: 0.7rem 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-block; /* Ensures the button looks proper */
+    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 2.5rem;
+}
+
+button.notify-button:hover {
+    background: #ff80bf;
+    color: white;
+    transform: scale(1.05);
+}
+
 /* Footer */
 .footer {
     background: rgba(255, 255, 255, 0.75); /* Slightly transparent */
