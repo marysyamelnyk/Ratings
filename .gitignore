@@ -9,5 +9,5 @@ pipelines.py
 scrapy.cfg
 middlewares.py
 api_key.py
-dbase.db
+/instance/
 reviews.txt
