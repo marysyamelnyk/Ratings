@@ -11,4 +11,4 @@ middlewares.py
 api_key.py
 reviews.txt
 /instance/
-.env
+tele_token.env
