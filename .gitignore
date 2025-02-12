@@ -11,3 +11,4 @@ middlewares.py
 api_key.py
 reviews.txt
 /instance/
+.env
