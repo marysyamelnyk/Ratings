@@ -12,3 +12,4 @@ api_key.py
 reviews.txt
 /instance/
 tele_token.env
+config.json
