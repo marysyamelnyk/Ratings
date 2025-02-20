@@ -1,56 +1,58 @@
 Review Tracker
 
-Review Tracker – це веб-застосунок для збору, аналізу та відстеження відгуків користувачів. Проєкт розроблений на Flask та використовує SQLite для управління базою даних. Додаток підтримує реєстрацію, автентифікацію та логування помилок, а також розгорнутий на AWS EC2.
+Review Tracker is a web application for collecting, analyzing, and tracking user feedback. The project is developed using Flask and utilizes SQLite for database management. The app supports user registration, authentication, and error logging, and it is deployed on AWS EC2.
 
-Функціонал
-- Реєстрація та авторизація користувачів
-- Збір та збереження відгуків у базі даних
-- Фільтрація та сортування відгуків
-- Логування подій та помилок
-- Деплой на AWS EC2
+Features
+- User registration and authentication
+- Collection and storage of feedback in the database
+- Feedback filtering and sorting
+- Event and error logging
+- Deployment on AWS EC2
+- Technologies Used
 
-Використані технології
 - Backend: Python, Flask
 - Database: SQLite (sqlite3)
 - Frontend: HTML, CSS, Bootstrap
 - Deployment: AWS EC2
 
-Встановлення та запуск
-1. Клонування репозиторію
+Installation and Setup
+
+1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/review-tracker.git
-cd review-tracker
+git clone https://github.com/yourusername/review-tracker.git  
+cd review-tracker  
 ```
 
-2. Створення віртуального середовища та встановлення залежностей
+2. Create a virtual environment and install dependencies
 ```bash
-python -m venv venv
-source venv/bin/activate  # Для Linux/Mac
-venv\Scripts\activate  # Для Windows
-pip install -r requirements.txt
+python -m venv venv  
+source venv/bin/activate  # For Linux/Mac  
+venv\Scripts\activate  # For Windows  
+pip install -r requirements.txt  
 ```
 
-3. Налаштування бази даних
-Змініть `.env.example` на `.env` та вкажіть свої налаштування бази даних:
-```
-DATABASE_URL=sqlite:///review_tracker.db
+3. Set up the database
+Rename .env.example to .env and specify your database settings:
+```ini
+
+DATABASE_URL=sqlite:///review_tracker.db  
 SECRET_KEY=your_secret_key
 ```
 
-Створіть базу даних:
+4. Create the database:
 ```bash
-flask db init
-flask db migrate -m "Initial migration."
-flask db upgrade
+flask db init  
+flask db migrate -m "Initial migration."  
+flask db upgrade  
 ```
 
-4. Запуск застосунку
+5. Run the application
 ```bash
-flask run
+flask run  
 ```
 
-Застосунок буде доступний за наступним посиланням:
+The application will be available at the following URL:
 http://3.82.226.65/
 
-Контакти
-Якщо у вас є питання або пропозиції, зв'яжіться зі мною через GitHub або email: marynka555@gmail.com.
+Contact
+If you have any questions or suggestions, feel free to reach out via GitHub or email: marynka555@gmail.com.
