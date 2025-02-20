@@ -71,13 +71,12 @@ def parse():
 
             existing_result = ParsingResult.query.filter_by(
                 user_email=current_user.email,
-                url=url,
-                xpath=xpath,
-                result=result
+                url=url.strip(),
             ).first()
 
             if existing_result:
                 existing_result.timestamp = db.func.now()
+                existing_result.result = result
                 db.session.commit()
                 return jsonify({
                     "url": url,
