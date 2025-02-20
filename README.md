@@ -19,7 +19,7 @@ Installation and Setup
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/review-tracker.git  
+git clone https://github.com/marysyamelnyk/Ratings 
 cd review-tracker  
 ```
 
