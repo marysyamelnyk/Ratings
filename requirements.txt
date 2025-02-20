@@ -21,4 +21,4 @@ pydantic-core==2.27.2
 dnspython==2.7.0 
 email-validator==2.2.0
 pyTelegramBotAPI==4.26.0
-python-dotenv-1.0.1
+python-dotenv==1.0.1
