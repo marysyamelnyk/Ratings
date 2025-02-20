@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from platform_class import Platform
+from telegram_bot import send_telegram_message
 import os
 import re
 
@@ -59,6 +60,7 @@ def parse():
             platform = Platform(url=url, xpath=xpath)
             result = platform.parser()
             print(f"Raw result from platform.parser(): {result}")  # Debugging print
+
             
             pattern = r"\['(.*?)'\]"
             match = re.search(pattern, result)
@@ -75,9 +77,14 @@ def parse():
             ).first()
 
             if existing_result:
+                if existing_result.result != result:  # Якщо результат змінився
+                    existing_result.result = result
+                    send_telegram_message(current_user.email, f"Ваш рейтинг на платформі змінено: {result}")
+
                 existing_result.timestamp = db.func.now()
                 existing_result.result = result
                 db.session.commit()
+
                 return jsonify({
                     "url": url,
                     "xpath": xpath,
