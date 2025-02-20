@@ -1,46 +1,56 @@
 Review Tracker
 
-This project is a web scraping and Telegram bot system that retrieves and tracks review counts from specified websites, allowing users to monitor review changes for different platforms directly through a Telegram bot.
+Review Tracker – це веб-застосунок для збору, аналізу та відстеження відгуків користувачів. Проєкт розроблений на Flask та використовує SQLite для управління базою даних. Додаток підтримує реєстрацію, автентифікацію та логування помилок, а також розгорнутий на AWS EC2.
 
-Features
+Функціонал
+- Реєстрація та авторизація користувачів
+- Збір та збереження відгуків у базі даних
+- Фільтрація та сортування відгуків
+- Логування подій та помилок
+- Деплой на AWS EC2
 
-Web Scraping: Fetches review counts from specified URLs using HTML tags and attributes.
-Review Management: Tracks changes in review counts. Saves reviews in a text file (reviews.txt) for persistent tracking. Includes options to clear and reset the review data.
-Telegram Bot Integration: Interactive bot for review monitoring. Commands to start review tracking, clear saved reviews, and reset data. Supports URL, tag, and attribute inputs to dynamically define what information to scrape.
+Використані технології
+- Backend: Python, Flask
+- Database: SQLite (sqlite3)
+- Frontend: HTML, CSS, Bootstrap
+- Deployment: AWS EC2
 
-Installation
+Встановлення та запуск
+1. Клонування репозиторію
+```bash
+git clone https://github.com/yourusername/review-tracker.git
+cd review-tracker
+```
 
-Prerequisites
-- Python 3.x
-- Telegram Bot API Key (set in settings.py)
-
-Dependencies
-
-Install required packages using:
+2. Створення віртуального середовища та встановлення залежностей
+```bash
+python -m venv venv
+source venv/bin/activate  # Для Linux/Mac
+venv\Scripts\activate  # Для Windows
 pip install -r requirements.txt
+```
 
-Usage
+3. Налаштування бази даних
+Змініть `.env.example` на `.env` та вкажіть свої налаштування бази даних:
+```
+DATABASE_URL=sqlite:///review_tracker.db
+SECRET_KEY=your_secret_key
+```
 
-Run the Bot: Start the bot by running the telegram_connection.py file:
-python telegram_connection.py
+Створіть базу даних:
+```bash
+flask db init
+flask db migrate -m "Initial migration."
+flask db upgrade
+```
 
-Commands:
+4. Запуск застосунку
+```bash
+flask run
+```
 
-/start: Begin the process to track a new URL for review monitoring.
-/check: Check and display the current review count from the predefined URLs.
-/clear: Clear all saved review data.
-/reset: Reload review data from reviews.txt.
+Застосунок буде доступний за наступним посиланням:
+http://3.82.226.65/
 
-Review Tracking:
-
-Users can specify the URL, HTML tag, attribute type, and value for reviews. The bot fetches the review count and saves it to reviews.txt.
-
-File Overview
-
-ratings.py: Handles scraping and review management.
-reviews.txt: Stores review data for tracking purposes.
-telegram_connection.py: Manages the Telegram bot and connects it with the scraping functionality.
-
-License
-
-This project is licensed under the MIT License.
+Контакти
+Якщо у вас є питання або пропозиції, зв'яжіться зі мною через GitHub або email: marynka555@gmail.com.
