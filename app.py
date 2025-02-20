@@ -61,9 +61,6 @@ def parse():
             result = platform.parser()
             print(f"Raw result from platform.parser(): {result}")  # Debugging print
 
-            if "Review has been updated." in result:
-                # Відправка повідомлення в Telegram
-                send_telegram_message(current_user.email, f"Ваш рейтинг на платформі змінено: {result}")
             
             pattern = r"\['(.*?)'\]"
             match = re.search(pattern, result)
@@ -80,9 +77,13 @@ def parse():
             ).first()
 
             if existing_result:
+                if existing_result.result != result:  # Якщо результат змінився
+                    existing_result.result = result
+                    send_telegram_message(current_user.email, f"Ваш рейтинг на платформі змінено: {result}")
+
                 existing_result.timestamp = db.func.now()
-                existing_result.result = result
                 db.session.commit()
+
                 return jsonify({
                     "url": url,
                     "xpath": xpath,
