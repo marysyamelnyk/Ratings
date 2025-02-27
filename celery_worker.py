@@ -23,6 +23,6 @@ from celery.schedules import crontab
 celery.conf.beat_schedule = {
     "parse_users_every_5_minutes": {
         "task": "tasks.parse_all_users",  # Використовуємо правильний шлях
-        "schedule": crontab(minute="*/5"),  # Запуск кожні 5 хвилин
+        "schedule": crontab(minute="0"),  # Запуск кожну годину
     },
 }
