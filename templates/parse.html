@@ -122,6 +122,8 @@
             }
         }
 
+        setInterval(loadResults, 5 * 60 * 1000); // Оновлення кожні 5 хвилин
+
         // Завантаження результатів, коли сторінка готова
         document.addEventListener("DOMContentLoaded", loadResults);
     </script>
