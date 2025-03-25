@@ -1,38 +1,32 @@
 from bot_config import bot
 import logging
-
-# Очікуємо email від користувачів
-waiting_for_email = {}
+from app import db, User, app
+from urllib.parse import unquote
 
 @bot.message_handler(commands=['start'])
 def start(message):
     chat_id = message.chat.id
     first_name = message.chat.first_name or "User"
-
-    bot.reply_to(message, f"Hello, {first_name}! Enter your email:")
     
-    waiting_for_email[chat_id] = True
-    print(f"Waiting for email from {first_name} (chat_id: {chat_id})")
+    text = message.text.strip()
 
-@bot.message_handler(func=lambda message: message.chat.id in waiting_for_email)
-def get_email(message):
-    from app import db, User, app
+    # Перевіряємо, чи є параметр start=subscribe_
+    if text.startswith("/start subscribe_"):
+        encoded_email = text.replace("/start subscribe_", "").strip()
+        email = unquote(encoded_email)  # Декодуємо email
 
-    chat_id = message.chat.id
-    email = message.text.strip()
+        with app.app_context():
+            user = User.query.filter_by(email=email).first()
+            if user:
+                user.telegram_id = str(chat_id)
+                db.session.commit()
+                bot.reply_to(message, f"✅ Your Telegram successfully connected with {email}!")
+                print(f"✅ Connected chat_id: {chat_id} with {email}")
+            else:
+                bot.reply_to(message, "❌ This email was not found. Please check your data.")
 
-    with app.app_context():
-
-        user = User.query.filter_by(email=email).first()
-        
-        if user:
-            user.telegram_id = str(chat_id)
-            db.session.commit()
-            bot.reply_to(message, f"Your Telegram successfuly connected with {email}!")
-            print(f"✅ Connected chat_id: {chat_id} with {email}")
-            del waiting_for_email[chat_id]
-        else:
-            bot.reply_to(message, "This email was not found. Check the provided data.")
+    else:
+        bot.reply_to(message, f"Hello, {first_name}! Enter your email:")
 
 def send_telegram_message(user_email, text):
     from app import User, app
