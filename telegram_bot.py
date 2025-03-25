@@ -1,6 +1,5 @@
 from bot_config import bot
 import logging
-from app import db, User, app
 from urllib.parse import unquote
 
 @bot.message_handler(commands=['start'])
@@ -14,6 +13,8 @@ def start(message):
     if text.startswith("/start subscribe_"):
         encoded_email = text.replace("/start subscribe_", "").strip()
         email = unquote(encoded_email)  # Декодуємо email
+
+        from app import User, app, db
 
         with app.app_context():
             user = User.query.filter_by(email=email).first()
