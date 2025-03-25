@@ -41,7 +41,7 @@ def parse_and_update(user_email, url, xpath, user_timezone=None):
 
         # ✅ Якщо результат змінився, оновлюємо також його
         existing_result.result = result
-        send_telegram_message(user_email, f"Ваш рейтинг на платформі змінився: {result}")
+        send_telegram_message(user_email, f" Рейтинг на {url} змінився: {result}")
         db.session.commit()
 
         return {
