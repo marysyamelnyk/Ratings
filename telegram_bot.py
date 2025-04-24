@@ -4,17 +4,18 @@ from urllib.parse import unquote
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    logging.info("Received /start command")
     chat_id = message.chat.id
     first_name = message.chat.first_name or "User"
     
     text = message.text.strip()
-    print(text)
+    logging.info(f"Message text: {text}")
 
     if "subscribe_" in text:
-        encoded_email = text.replace("/start subscribe_", "").strip()
+        encoded_email = text.split("subscribe_")[1]
         email = unquote(encoded_email)  # Декодуємо email
 
-        print(encoded_email)
+        logging.info(f"Message email: {encoded_email}")
 
         from app import User, app, db
 
