@@ -8,10 +8,13 @@ def start(message):
     first_name = message.chat.first_name or "User"
     
     text = message.text.strip()
+    print(text)
 
     if "subscribe_" in text:
         encoded_email = text.replace("/start subscribe_", "").strip()
         email = unquote(encoded_email)  # Декодуємо email
+
+        print(encoded_email)
 
         from app import User, app, db
 
@@ -23,6 +26,7 @@ def start(message):
                 bot.reply_to(message, f"✅ Your Telegram successfully connected with {email}!")
                 print(f"✅ Connected chat_id: {chat_id} with {email}")
             else:
+                print(f"User {first_name} has not provided the correct data.")
                 bot.reply_to(message, "❌ This email was not found. Please check your data.")
 
     else:
