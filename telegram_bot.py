@@ -9,8 +9,7 @@ def start(message):
     
     text = message.text.strip()
 
-    # Перевіряємо, чи є параметр start=subscribe_
-    if text.startswith("/start subscribe_"):
+    if "subscribe_" in text:
         encoded_email = text.replace("/start subscribe_", "").strip()
         email = unquote(encoded_email)  # Декодуємо email
 
