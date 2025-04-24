@@ -184,7 +184,7 @@
                     <button type="submit">Delete my profile</button>
                 </form> 
                 <td>
-                    <a href="https://t.me/web_parser_notif_bot?start=subscribe_{{ user.email | urlencode }}" target="_blank">
+                    <a href="https://t.me/web_parser_notif_bot?start=subscribe_{{ user.email | sha256 }}" target="_blank">
                         <button class="notify-button">Telegram Notifications</button>
                     </a>                    
                 </td>

@@ -3,6 +3,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from utils import parse_and_update
 from models import db, User, ParsingResult
+import hashlib
 import os
 
 app = Flask(__name__)
@@ -15,7 +16,10 @@ db.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message = "Please log in to access this page."
-    
+
+@app.template_filter('sha256')
+def sha256_filter(value):
+    return hashlib.sha256(value.encode()).hexdigest()    
 
 @login_manager.user_loader
 def load_user(user_id):
