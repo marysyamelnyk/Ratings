@@ -2,6 +2,8 @@ from bot_config import bot
 import logging
 from urllib.parse import unquote
 
+logging.basicConfig(filename='bot.log', level=logging.INFO)
+
 @bot.message_handler(commands=['start'])
 def start(message):
     logging.info("Received /start command")
