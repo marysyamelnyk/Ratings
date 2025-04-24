@@ -14,20 +14,20 @@ def start(message):
     logging.info(f"Message text: {text}")
 
     if "subscribe_" in text:
-        encoded_email = text.split("subscribe_")[1]
-        email = unquote(encoded_email)  # Декодуємо email
+        received_hash = text.split("subscribe_")[1]
+        logging.info(f"Received hash: {received_hash}")
 
-        logging.info(f"Message email: {encoded_email}")
+        logging.info(f"Message email: {received_hash}")
 
         from app import User, app, db
 
         with app.app_context():
-            user = User.query.filter_by(email=email).first()
+            user = User.query.filter_by(email_sha256=received_hash).first()
             if user:
                 user.telegram_id = str(chat_id)
                 db.session.commit()
-                bot.reply_to(message, f"✅ Your Telegram successfully connected with {email}!")
-                print(f"✅ Connected chat_id: {chat_id} with {email}")
+                bot.reply_to(message, f"✅ Your Telegram successfully connected with {user.email}!")
+                print(f"✅ Connected chat_id: {chat_id} with {user.email}")
             else:
                 print(f"User {first_name} has not provided the correct data.")
                 bot.reply_to(message, "❌ This email was not found. Please check your data.")

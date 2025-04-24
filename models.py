@@ -10,6 +10,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     telegram_id = db.Column(db.String(50), unique=True, nullable=True)
+    email_sha256 = db.Column(db.String(64), nullable=True)
 
 # ParsingResult model
 class ParsingResult(db.Model):

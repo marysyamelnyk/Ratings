@@ -69,6 +69,13 @@ def register():
             flash("Email is already registered.", "error")
             return redirect(url_for("register"))
         
+        email_hash = sha256_filter(email) 
+
+        # Перевірка: чи такий хеш вже існує
+        if User.query.filter_by(email_sha256=email_hash).first():
+            flash("This email hash already exists in the system.", "error")
+            return redirect(url_for("register"))
+
         hashed_password = generate_password_hash(password)
         new_user = User(username=username, email=email, password=hashed_password)
         db.session.add(new_user)
