@@ -22,6 +22,8 @@ def start(message):
         with app.app_context():
             user = User.query.filter_by(email_sha256=received_hash).first()
 
+            logging.info("Before checking if user exists")
+
             if user is None:
                 logging.warning(f"User with email_sha256 {received_hash} not found.")
                 print(f"User {first_name} has not provided the correct data.")
