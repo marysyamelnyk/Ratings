@@ -23,10 +23,15 @@ def start(message):
         with app.app_context():
             user = User.query.filter_by(email_sha256=received_hash).first()
             if user:
-                user.telegram_id = str(chat_id)
-                db.session.commit()
-                bot.reply_to(message, f"✅ Your Telegram successfully connected with {user.email}!")
-                print(f"✅ Connected chat_id: {chat_id} with {user.email}")
+                if user.telegram_id:
+                    bot.reply_to(message, f"❌ Your Telegram is already connected with {user.email}.")
+                    print(f"User {user.email} is already connected with Telegram.")
+
+                else:    
+                    user.telegram_id = str(chat_id)
+                    db.session.commit()
+                    bot.reply_to(message, f"✅ Your Telegram successfully connected with {user.email}!")
+                    print(f"✅ Connected chat_id: {chat_id} with {user.email}")
             else:
                 print(f"User {first_name} has not provided the correct data.")
                 bot.reply_to(message, "❌ This email was not found. Please check your data.")
