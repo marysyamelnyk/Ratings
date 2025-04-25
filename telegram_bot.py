@@ -13,8 +13,8 @@ def start(message):
     text = message.text.strip()
     logging.info(f"Message text: {text}")
 
-    if "subscribe_" in text:
-        received_hash = text.split("subscribe_")[1]
+    if message.text.startswith('/start '):
+        received_hash = text.split(" ", 1)[1].strip()
         logging.info(f"Received hash: {received_hash}")
 
         logging.info(f"Message email: {received_hash}")
