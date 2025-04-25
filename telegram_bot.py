@@ -18,8 +18,11 @@ def start(message):
         logging.info(f"Message email: {received_hash}")
 
         from app import User, app, db
+        logging.info("1 Start checking email...")
 
         with app.app_context():
+            logging.info("2 Start checking email...")
+
             user = User.query.filter_by(email_sha256=received_hash).first()
 
             logging.info("Before checking if user exists")
