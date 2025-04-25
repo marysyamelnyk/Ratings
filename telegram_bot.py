@@ -15,31 +15,42 @@ def start(message):
     if message.text.startswith('/start '):
         received_hash = text.split(" ", 1)[1].strip()
         logging.info(f"Received hash: {received_hash}")
-
         logging.info(f"Message email: {received_hash}")
 
         from app import User, app, db
 
         with app.app_context():
             user = User.query.filter_by(email_sha256=received_hash).first()
-            if user:
-                logging.info(f"Found user: {user.email}, Telegram ID: {user.telegram_id}")
 
-                if user.telegram_id not in [None, '']:
-                    bot.reply_to(message, f"❌ Your Telegram is already connected with {user.email}.")
-                    print(f"User {user.email} is already connected with Telegram.")
-
-                else:    
-                    user.telegram_id = str(chat_id)
-                    db.session.commit()
-                    bot.reply_to(message, f"✅ Your Telegram successfully connected with {user.email}!")
-                    print(f"✅ Connected chat_id: {chat_id} with {user.email}")
-            else:
+            if user is None:
+                logging.warning(f"User with email_sha256 {received_hash} not found.")
                 print(f"User {first_name} has not provided the correct data.")
                 bot.reply_to(message, "❌ This email was not found. Please check your data.")
+                return
 
+            logging.info(f"Found user: {user.email}, Telegram ID: {user.telegram_id}")
+
+            # Перевіряємо, чи цей chat_id вже прив’язаний до іншого юзера
+            existing_user = User.query.filter_by(telegram_id=str(chat_id)).first()
+            if existing_user and existing_user.email_sha256 != user.email_sha256:
+                logging.warning(f"Telegram ID {chat_id} is already connected to {existing_user.email}")
+                bot.reply_to(message, "❌ This Telegram account is already connected to another user.")
+                return
+
+            # Перевіряємо, чи сам користувач вже має telegram_id
+            if user.telegram_id not in [None, '']:
+                logging.info(f"User {user.email} is already connected with Telegram ID: {user.telegram_id}")
+                bot.reply_to(message, f"❌ Your Telegram is already connected with {user.email}.")
+                return
+
+            # Підключаємо Telegram
+            user.telegram_id = str(chat_id)
+            db.session.commit()
+            bot.reply_to(message, f"✅ Your Telegram successfully connected with {user.email}!")
+            logging.info(f"✅ Connected chat_id: {chat_id} with {user.email}")
     else:
         bot.reply_to(message, f"Hello, {first_name}! Enter your email:")
+
 
 def send_telegram_message(user_email, text):
     from app import User, app
