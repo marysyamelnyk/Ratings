@@ -23,7 +23,13 @@ def start(message):
         with app.app_context():
             logging.info("2 Start checking email...")
 
-            user = User.query.filter_by(email_sha256=received_hash).first()
+            try:
+                user = User.query.filter_by(email_sha256=received_hash).first()
+                logging.info("User query executed.")
+            except Exception as e:
+                logging.error(f"Error executing query: {e}")
+                bot.reply_to(message, "❌ Database error. Please try again later.")
+                return
 
             logging.info("Before checking if user exists")
 
@@ -49,12 +55,18 @@ def start(message):
                 return
 
             # Підключаємо Telegram
-            user.telegram_id = str(chat_id)
-            db.session.commit()
-            bot.reply_to(message, f"✅ Your Telegram successfully connected with {user.email}!")
-            logging.info(f"✅ Connected chat_id: {chat_id} with {user.email}")
+            try:
+                user.telegram_id = str(chat_id)
+                db.session.commit()
+                logging.info(f"✅ Connected chat_id: {chat_id} with {user.email}")
+                bot.reply_to(message, f"✅ Your Telegram successfully connected with {user.email}!")
+            except Exception as e:
+                logging.error(f"Error committing to database: {e}")
+                bot.reply_to(message, "❌ Error while saving to database. Please try again later.")
+                return
     else:
         bot.reply_to(message, f"Hello, {first_name}! Enter your email:")
+
 
 
 def send_telegram_message(user_email, text):
