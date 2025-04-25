@@ -23,6 +23,8 @@ def start(message):
         with app.app_context():
             user = User.query.filter_by(email_sha256=received_hash).first()
             if user:
+                logging.info(f"Found user: {user.email}, Telegram ID: {user.telegram_id}")
+                
                 if user.telegram_id:
                     bot.reply_to(message, f"❌ Your Telegram is already connected with {user.email}.")
                     print(f"User {user.email} is already connected with Telegram.")
