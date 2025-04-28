@@ -1,0 +1,44 @@
+# Оточення
+.env 
+.venv/
+venv/
+*.env 
+
+# Конфігураційні файли
+.flaskenv
+settings.py
+
+# IDE файли
+.idea/ 
+.vscode/
+.DS_Store
+
+# Системи збереження
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+
+items.py
+pipelines.py
+scrapy.cfg
+middlewares.py
+api_key.py
+
+# Бази даних
+/instance/
+tele_token.env
+config.json
+
+# Файли, які створюються автоматично
+*.log                     
+*.sqlite3                 
+*.db    
+
+# Тестування
+tests/__pycache__/
+
+# Папка для збірки або публікації (наприклад для деплою на сервер)
+build/                   
+dist/  

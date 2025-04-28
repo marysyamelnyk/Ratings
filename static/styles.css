@@ -1,0 +1,209 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(120deg, #80d0ff, #ff80bf);
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+/* Container */
+.container {
+    width: 80%; /* Reduced width for narrower sections */
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header */
+.header {
+    background: rgba(255, 255, 255, 0.75); /* More transparent */
+    padding: 1rem 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+}
+
+.header nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.header nav ul li a:hover {
+    color: #ff80bf;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 5rem 2rem;
+    background: rgba(255, 255, 255, 0.6); /* More transparent */
+    border-radius: 15px;
+    margin: 2rem auto;
+    color: #333;
+    width: 80%; /* Narrower */
+    max-width: 1000px;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #555;
+}
+
+.hero .cta-button {
+    text-decoration: none; /* Removes underline */
+    background: rgba(255, 255, 255, 0.8);
+    color: #ff80bf;
+    border: none;
+    padding: 0.7rem 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-block; /* Ensures the button looks proper */
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.hero .cta-button:hover {
+    background: #ff80bf;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Instructions Section */
+.instructions {
+    padding: 4rem 2rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.6); /* More transparent */
+    border-radius: 15px;
+    margin: 2rem auto;
+    color: #333;
+    width: 80%; /* Narrower */
+    max-width: 1000px;
+}
+
+.instructions h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #333;
+}
+
+.cards {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: nowrap; /* Ensure steps are on one line */
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.7); /* Slightly transparent */
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 30%; /* Each card takes up 30% width */
+    text-align: left;
+}
+
+.card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.card p {
+    color: #555;
+}
+
+
+/* Footer */
+.footer {
+    background: rgba(255, 255, 255, 0.75); /* Slightly transparent */
+    color: #333;
+    padding: 2rem 0;
+    text-align: center;
+    border-top: 1px solid #ddd;
+}
+
+.footer ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.footer ul li a {
+    text-decoration: none;
+    color: #333;
+    transition: color 0.3s;
+}
+
+.footer ul li a:hover {
+    color: #ff80bf;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.result-section {
+    padding: 4rem 2rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.6); /* Match transparency with other sections */
+    border-radius: 15px;
+    margin: 2rem auto;
+    color: #333;
+    width: 80%;
+    max-width: 1000px;
+}
+
+.result-section h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+#result-content {
+    text-align: left;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+

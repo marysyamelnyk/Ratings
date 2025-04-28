@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Parser</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">Web Parser</div>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Sign Up</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Extract Data Effortlessly</h1>
+                <p>Web Parser simplifies web scraping with an easy-to-use interface. Start parsing URLs and extracting data in seconds.</p>
+                <!-- Updated button to navigate to the form -->
+                <a href="/register" class="cta-button">Sign Up Now</a>
+            </div>
+        </section>
+
+        <section class="instructions">
+            <div class="container">
+                <h2>How It Works</h2>
+                <div class="cards">
+                    <div class="card">
+                        <h3>Step 1</h3>
+                        <p>Enter the URL of the website you want to parse.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Step 2</h3>
+                        <p>Provide the XPath for the data you need.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Step 3</h3>
+                        <p>Click "Start Parsing" to extract your data.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Web Parser. All rights reserved.</p>
+            <ul>
+                <li><a href="#">Contact Me</a></li>
+                <li><a href="#">Help</a></li>
+                <li><a href="#">FAQ</a></li>
+            </ul>
+        </div>
+    </footer>
+    
+</body>
+</html>
