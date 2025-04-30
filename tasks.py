@@ -1,7 +1,7 @@
 from celery import shared_task
 from app import app
-from apps.models import User, ParsingResult
-from apps.utils import parse_and_update
+from models import User, ParsingResult
+from utils import parse_and_update
 
 @shared_task
 def parse_user_data(user_email):

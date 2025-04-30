@@ -2,10 +2,10 @@ from flask.testing import FlaskClient
 from werkzeug.security import generate_password_hash
 import pytest
 from app import app
-from apps.models import db, User, ParsingResult
+from models import db, User, ParsingResult
 from flask_login import login_user
 from unittest.mock import patch
-from telega_bot.telegram_bot import send_telegram_message
+from telegram_bot import send_telegram_message
 
 @pytest.fixture
 def client():

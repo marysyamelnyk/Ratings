@@ -1,4 +1,4 @@
-from telega_bot.bot_config import bot
+from bot_config import bot
 import logging
 
 logging.basicConfig(filename='bot.log', level=logging.INFO)

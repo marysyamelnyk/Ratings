@@ -1,6 +1,6 @@
-from app.models import db, ParsingResult
-from app.platform_class import Platform
-from telega_bot.telegram_bot import send_telegram_message
+from models import db, ParsingResult
+from platform_class import Platform
+from telegram_bot import send_telegram_message
 import re
 from datetime import datetime, timezone
 import pytz
