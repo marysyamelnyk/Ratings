@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from apps.utils import parse_and_update
-from apps.models import db, User, ParsingResult
+from utils import parse_and_update
+from models import db, User, ParsingResult
 import hashlib
 import os
 
